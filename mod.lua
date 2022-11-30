@@ -4,7 +4,7 @@ function register()
     return {
         name = MOD_NAME,
         hooks = {"click", "destroy", "scroll", "ready"},
-        modules = {"drawer", "shipping_bin", "flower_box", "builder_box"}
+        modules = {"drawer", "shipping_bin", "flower_box", "builder_box", "auto_crafter"}
     }
 end
 
@@ -13,9 +13,10 @@ function init()
     shipping_check = init_shipping()
     flower_box_check = init_flower_box()
     builder_box_check = init_builder_box()
+    crafter_check = init_crafter()
 
     if drawer_check == "Success" and shipping_check == "Success" and
-        flower_box_check == "Success" and builder_box_check == "Success" then
+        flower_box_check == "Success" and builder_box_check == "Success" and crafter_check == "Success"then
         return "Success"
     end
 end
@@ -23,6 +24,7 @@ end
 function ready()
     flower_box_ready()
     builder_box_ready()
+    crafter_ready()
 end
 
 function click(button, click_type)
@@ -30,6 +32,7 @@ function click(button, click_type)
     click_drawer(button, click_type)
     click_flower_box(button, click_type)
     click_builder_box(button, click_type)
+    click_crafter(button, click_type)
 end
 
 function destroy(id, x, y, oid, fields)

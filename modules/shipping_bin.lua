@@ -60,10 +60,10 @@ end
 
 function shipping_tooltip(menu_id)
     if api_gp(menu_id, "working") ~= true then return end
-    local time_left = math.floor(api_gp(menu_id, "p_end") -
+    local time_left = math.ceil(api_gp(menu_id, "p_end") -
                                      api_gp(menu_id, "p_start"))
 
-    return {{"Progress", "FONT_WHITE"}, {time_left .. "s left", "FONT_BGREY"}}
+    return {{"Selling Item", "FONT_WHITE"}, {time_left .. "s left", "FONT_BGREY"}}
 end
 
 function shipping_change(menu_id)
