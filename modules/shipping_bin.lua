@@ -45,7 +45,7 @@ function define_shipping()
 end
 
 function on_shipping_define(menu_id)
-    api_dp(menu_id, "working", false)
+    api_dp(menu_id, "working", 0)
     api_dp(menu_id, "p_start", 0)
     api_dp(menu_id, "p_end", BIN_TIMER)
 
@@ -54,12 +54,12 @@ function on_shipping_define(menu_id)
     api_dp(menu_id, "progress_bar",
            api_get_sprite("storage_drawer_shipping_progress"))
 
-    fields = {"p_start", "p_end"}
-    fields = api_sp(menu_id, "_fields", fields)
+    local fields = {"p_start", "p_end"}
+    api_sp(menu_id, "_fields", fields)
 end
 
 function shipping_tooltip(menu_id)
-    if api_gp(menu_id, "working") ~= true then return end
+    if api_gp(menu_id, "working") ~= 1 then return end
     local time_left = math.ceil(api_gp(menu_id, "p_end") -
                                      api_gp(menu_id, "p_start"))
 
@@ -69,10 +69,10 @@ end
 function shipping_change(menu_id)
     local sell_item = find_sellable_slot(menu_id)
     if sell_item == nil then
-        api_sp(menu_id, "working", false)
+        api_sp(menu_id, "working", 0)
         api_sp(menu_id, "p_start", 0)
     else
-        api_sp(menu_id, "working", true)
+        api_sp(menu_id, "working", 1)
     end
 end
 
@@ -88,11 +88,11 @@ function find_sellable_slot(menu_id)
 end
 
 function shipping_tick(menu_id)
-    if api_gp(menu_id, "working") ~= true then return end
+    if api_gp(menu_id, "working") ~= 1 then return end
 
     local sell_item = find_sellable_slot(menu_id)
     if sell_item == nil then
-        api_sp(menu_id, "working", false)
+        api_sp(menu_id, "working", 0)
         api_sp(menu_id, "p_start", 0)
     else
         api_sp(menu_id, "p_start", api_gp(menu_id, "p_start") + 0.1)
@@ -128,7 +128,7 @@ function shipping_draw(menu_id)
     api_draw_sprite(progress_sprite, 1, gx, gy) -- bar background
 
     if api_get_highlighted("ui") == gui.id and api_gp(menu_id, "working") ==
-        true then
+        1 then
         api_draw_sprite(progress_sprite, 0, gx, gy) -- highlighted bar
     end
 

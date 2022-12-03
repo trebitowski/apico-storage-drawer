@@ -15,7 +15,7 @@ CRAFTER_PROGRESS_HEIGHT = 10
 
 CRAFTER_INPUT_SLOTS = {1,2,3,4,5,6}
 CRAFTER_OUTPUT_SLOTS = {7,8,9,10,11,12}
-CRAFTER_RECIPE_SLOT = 19
+CRAFTER_RECIPE_SLOT = 13
 
 CRAFTER_RECIPES = {}
 
@@ -33,7 +33,6 @@ function define_crafter()
             {30, 17}, {30, 40}, {30, 63},
             {99, 17, "Output"}, {99, 40, "Output"}, {99, 63, "Output"}, -- output products
             {122, 17, "Output"}, {122, 40, "Output"}, {122, 63, "Output"},
-            {7, 89}, {30, 89}, {53, 89}, {76, 89},{99, 89}, {122, 89}, -- extra space
             {65, 35, "Output"} -- recipe picker
         },
         buttons = {"Help", "Target", "Close"},
@@ -59,7 +58,7 @@ function define_crafter()
 end
 
 function on_crafter_define(menu_id)
-    api_dp(menu_id, "working", false)
+    api_dp(menu_id, "working", 0)
     api_dp(menu_id, "p_start", 0)
     api_dp(menu_id, "p_end", CRAFTER_TIMER)
 
@@ -73,12 +72,12 @@ function on_crafter_define(menu_id)
     
     api_dp(menu_id, "recipe", recipe)
 
-    fields = {"p_start", "p_end", "recipe"}
-    fields = api_sp(menu_id, "_fields", fields)
+    local fields = {"p_start", "p_end", "recipe"}
+    api_sp(menu_id, "_fields", fields)
 end
 
 function crafter_tooltip(menu_id)
-    if api_gp(menu_id, "working") ~= true then return end
+    if api_gp(menu_id, "working") ~= 1 then return end
     local time_left = math.ceil(api_gp(menu_id, "p_end") -
                                      api_gp(menu_id, "p_start"))
 
@@ -89,9 +88,9 @@ function crafter_change(menu_id)
     local has_ingredients = crafter_has_ingredients(menu_id)
     --api_log('change_result', tostring(has_ingredients))
     if has_ingredients == true then
-      api_sp(menu_id, "working", true)  
+      api_sp(menu_id, "working", 1)  
     else
-      api_sp(menu_id, "working", false)
+      api_sp(menu_id, "working", 0)
       api_sp(menu_id, "p_start", 0)
     end
 end
@@ -149,7 +148,7 @@ function click_crafter(button, click_type)
       --api_log("click()", "Gather: " .. item_id)
       if (item_id == "") then
         api_sp(menu_id, "recipe", nil)
-        api_sp(menu_id, "working", false)
+        api_sp(menu_id, "working", 0)
         api_sp(menu_id, "p_start", 0)
         api_slot_clear(slot_id)
       else
@@ -166,11 +165,11 @@ function click_crafter(button, click_type)
   end
 end
 function crafter_tick(menu_id)
-    if api_gp(menu_id, "working") ~= true then return end
+    if api_gp(menu_id, "working") ~= 1 then return end
 
     local has_ingredients = crafter_has_ingredients(menu_id)
     if has_ingredients == false then
-        api_sp(menu_id, "working", false)
+        api_sp(menu_id, "working", 0)
         api_sp(menu_id, "p_start", 0)
     else
         api_sp(menu_id, "p_start", api_gp(menu_id, "p_start") + 0.1)
@@ -180,7 +179,7 @@ function crafter_tick(menu_id)
             -- craft item
             local result = crafter_use_items(menu_id)
             if result == false then
-              api_sp(menu_id, "working", false)
+              api_sp(menu_id, "working", 0)
               api_sp(menu_id, "p_start", 0)
             end
         end
@@ -213,7 +212,7 @@ function crafter_draw(menu_id)
     api_draw_sprite(progress_sprite, 1, gx, gy) -- bar background
 
     if api_get_highlighted("ui") == gui.id and api_gp(menu_id, "working") ==
-        true then
+        1 then
         api_draw_sprite(progress_sprite, 0, gx, gy) -- highlighted bar
     end
     

@@ -8,8 +8,6 @@ DRAWER_ERROR_MISMATCH = "Storage drawers can only store one type of item"
 DRAWER_ERROR_QUANTITY = "Storage drawers can only hold up to " ..
                             DRAWER_MAX_CAPACITY .. " items"
 
-EMPTY_SPRITE = 920
-
 drawer_sprite = nil
 tooltip_sprite = nil
 error_sprite = nil
