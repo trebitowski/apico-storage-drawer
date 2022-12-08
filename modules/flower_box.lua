@@ -14,7 +14,7 @@ function init_flower_box()
     fb_active_sprite = api_define_sprite(MOD_NAME .. "fb_active_slot",
                                          "sprites/active_slot.png", 1)
     fb_title_sprite = api_define_sprite(MOD_NAME .. "_flower_box_title",
-                                        "sprites/flower_box/title.png", 2)
+                                        "sprites/flower_box/title.png", 1)
     fb_special_menu = api_define_sprite(MOD_NAME .. "_flower_box_special_menu",
                                         "sprites/flower_box/bloom_gui.png", 1)
     return define_flower_box()
@@ -198,9 +198,6 @@ function flower_box_draw(menu_id)
 
     local highlighted = api_get_highlighted("menu")
     if highlighted == menu_id then
-        api_draw_sprite(fb_title_sprite, 1, 2 + menu.x - cam.x,
-                        2 + menu.y - cam.y)
-    else
         api_draw_sprite(fb_title_sprite, 0, 2 + menu.x - cam.x,
                         2 + menu.y - cam.y)
     end

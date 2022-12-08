@@ -14,7 +14,7 @@ function init_builder_box()
     bb_active_sprite = api_define_sprite(MOD_NAME .. "bb_active_slot",
                                          "sprites/active_slot.png", 1)
     bb_title_sprite = api_define_sprite(MOD_NAME .. "_builder_box_title",
-                                        "sprites/builder_box/title.png", 2)
+                                        "sprites/builder_box/title.png", 1)
     return define_builder_box()
 end
 
@@ -192,9 +192,6 @@ function builder_box_draw(menu_id)
 
     local highlighted = api_get_highlighted("menu")
     if highlighted == menu_id then
-        api_draw_sprite(bb_title_sprite, 1, 2 + menu.x - cam.x,
-                        2 + menu.y - cam.y)
-    else
         api_draw_sprite(bb_title_sprite, 0, 2 + menu.x - cam.x,
                         2 + menu.y - cam.y)
     end

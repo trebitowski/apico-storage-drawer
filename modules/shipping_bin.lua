@@ -67,6 +67,7 @@ function shipping_tooltip(menu_id)
 end
 
 function shipping_change(menu_id)
+    api_log('Shipping bin', "CHANGE")
     local sell_item = find_sellable_slot(menu_id)
     if sell_item == nil then
         api_sp(menu_id, "working", 0)
@@ -134,9 +135,6 @@ function shipping_draw(menu_id)
 
     local highlighted = api_get_highlighted("menu")
     if highlighted == menu_id then
-        api_draw_sprite(sb_title_sprite, 1, 2 + menu.x - cam.x,
-                        2 + menu.y - cam.y)
-    else
         api_draw_sprite(sb_title_sprite, 0, 2 + menu.x - cam.x,
                         2 + menu.y - cam.y)
     end
@@ -144,6 +142,6 @@ end
 
 function init_shipping()
     sb_title_sprite = api_define_sprite(MOD_NAME .. "_shipping_bin_title",
-                                        "sprites/shipping_bin/title.png", 2)
+                                        "sprites/shipping_bin/title.png", 1)
     return define_shipping()
 end

@@ -1,21 +1,19 @@
---TODO: 
--- -Error messages
--- -Honeycore?
--- - get colors from game files
 CRAFTER_ID = "auto_crafter"
 FULL_CRAFTER_ID = "storage_drawer_auto_crafter"
 
-CRAFTER_TIMER = 3 --TODO: change
+CRAFTER_TIMER = 3
 CRAFTER_SEARCH = {"ANY"}
 CRAFTER_SLOTS = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}
 
-CRAFTER_PROGRESS_SIZE = 45
+CRAFTER_PROGRESS_SIZE = 50
 CRAFTER_PROGRESS_OFFSET = 1
 CRAFTER_PROGRESS_HEIGHT = 10
 
 CRAFTER_INPUT_SLOTS = {1,2,3,4,5,6}
 CRAFTER_OUTPUT_SLOTS = {7,8,9,10,11,12}
 CRAFTER_RECIPE_SLOT = 13
+
+CRAFTER_MENU_HEIGHT = 86
 
 CRAFTER_RECIPES = {}
 
@@ -36,8 +34,12 @@ function define_crafter()
             {65, 35, "Output"} -- recipe picker
         },
         buttons = {"Help", "Target", "Close"},
-        info = {{"1. Items to Sell", "FONT_BGREY"}}, --TODO: change
-        tools = {"mouse1", "hammer1"},
+        info = {
+          {"1. Crafting Ingredients", "GREEN"},
+          {"2. Crafting Recipe", "ORANGE"},
+          {"3. Output", "RED"}
+      },        
+      tools = {"mouse1", "hammer1"},
         placeable = true
     }, "sprites/auto_crafter/item.png", "sprites/auto_crafter/menu.png", {
         define = "on_crafter_define",
@@ -47,7 +49,7 @@ function define_crafter()
     })
 
     local recipe = {
-        {item = "workbench", amount = 1}, {item = "cog", amount = 5} --TODO change
+        {item = "workbench", amount = 1}, {item = "cog", amount = 10} , {item = "planks2", amount = 5}
     }
     local define_recipe = api_define_recipe("crafting", FULL_CRAFTER_ID, recipe, 1)
 
@@ -158,6 +160,7 @@ function click_crafter(button, click_type)
           api_sp(menu_id, "recipe", recipe)
           api_slot_set(slot_id, item_id, recipe.total or 1)
           api_sp(menu_id, "p_start", 0)
+          api_sp(menu_id, "working", 1) 
         end
       end
     end
@@ -193,16 +196,12 @@ function crafter_draw(menu_id)
 
     local highlighted = api_get_highlighted("menu")
     if highlighted == menu_id then
-        api_draw_sprite(ac_title_sprite, 1, 2 + menu.x - cam.x,
-                        2 + menu.y - cam.y)
-    else
         api_draw_sprite(ac_title_sprite, 0, 2 + menu.x - cam.x,
                         2 + menu.y - cam.y)
     end
 
     local progress_sprite = api_gp(menu_id, "progress_bar")
-    
-    local mouse_pos = api_get_mouse_position()
+
     local gx = gui.x - cam.x
     local gy = gui.y - cam.y
     local progress = (api_gp(menu_id, "p_start") / api_gp(menu_id, "p_end") *
@@ -222,16 +221,18 @@ function crafter_draw(menu_id)
       slot_inst = api_get_slot_inst(slot_id)
       --api_log("yeey", {index = slot_inst.index, craft = CRAFTER_RECIPE_SLOT, item = slot_inst.item})
       if slot_inst.index == CRAFTER_RECIPE_SLOT and slot_inst.item ~= "" then
-        local recipe = api_gp(menu_id, "recipe")    
-        api_draw_sprite(ac_recipe_tooltip_sprite, 0, mouse_pos.x + 8 - cam.x, mouse_pos.y + 8 - cam.y)
+        local recipe = api_gp(menu_id, "recipe")
+        local start_x = menu.x - cam.x
+        local start_y = menu.y + CRAFTER_MENU_HEIGHT + 1 - cam.y
+        api_draw_sprite_ext(ac_recipe_tooltip_sprite, 0, start_x, start_y, 1, 1, 0, nil, 0.9)
         local offset = 0
         for i=1,#recipe.recipe do
           local ingredient = recipe.recipe[i]
           if ingredient.item then
             local spr = api_get_sprite(ingredient.item .. "_item")
             if spr == EMPTY_SPRITE then spr = api_get_sprite(ingredient.item) end
-            api_draw_sprite(spr, 0, mouse_pos.x + 15 - cam.x + offset, mouse_pos.y + 15 - cam.y)
-            api_draw_number(mouse_pos.x + 34 - cam.x + offset, mouse_pos.y + 34 - cam.y, ingredient.amount)
+            api_draw_sprite(spr, 0, start_x + 7 + offset, start_y + 7)
+            api_draw_number(start_x + 26 + offset, start_y + 26, ingredient.amount)
             offset = offset + 31
           end
         end
@@ -243,7 +244,7 @@ end
 
 function init_crafter()
     ac_title_sprite = api_define_sprite(MOD_NAME .. "_auto_crafter_title",
-                                        "sprites/auto_crafter/title.png", 2)
+                                        "sprites/auto_crafter/title.png", 1)
     ac_recipe_tooltip_sprite = api_define_sprite(MOD_NAME .. "_auto_crafter_tooltip", "sprites/auto_crafter/tooltip.png", 1)
     return define_crafter()
 end
