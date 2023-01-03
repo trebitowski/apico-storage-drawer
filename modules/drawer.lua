@@ -153,7 +153,8 @@ function click_drawer(button, click_type)
         for i = 1, #menus do
             if menus[i].menu_id ~= menu_id and api_gp(menus[i].id, "open") and
                 api_gp(menus[i].menu_id, "target") then
-                api_add_slot_to_menu(slot_id, menus[i].menu_id)
+                    api_log("Shift menu", {slot_id = slot_id, menu = menus[i].menu_id})
+                -- api_add_slot_to_menu(slot_id, menus[i].menu_id)
                 local new_slot = api_get_slot_inst(slot_id)
                 if slot_ct - amt + new_slot.count <= 0 then
                     api_sp(menu_id, "item_sprite", nil)
@@ -170,7 +171,8 @@ function click_drawer(button, click_type)
                 return
             end
         end
-        api_add_slot_to_menu(slot_id, api_get_player_instance())
+        api_log("Shift player", {slot_id = slot_id, player = api_get_player_instance()})
+        -- api_add_slot_to_menu(slot_id, api_get_player_instance())
         local new_slot = api_get_slot_inst(slot_id)
         if slot_ct - amt + new_slot.count <= 0 then
             api_sp(menu_id, "item_sprite", nil)

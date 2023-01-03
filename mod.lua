@@ -3,7 +3,7 @@ EMPTY_SPRITE = nil
 function register()
     return {
         name = MOD_NAME,
-        hooks = {"click", "destroy", "scroll", "ready", "draw"},
+        hooks = {"click", "destroy", "scroll", "ready", "draw", "gui"},
         modules = {"drawer", "shipping_bin", "flower_box", "builder_box", "auto_crafter", "inserter"} --, "advanced_drawer"}
     }
 end
@@ -64,4 +64,8 @@ end
 
 function draw()
     inserter_draw_world()
+end
+
+function gui()
+    inserter_draw_gui()
 end
