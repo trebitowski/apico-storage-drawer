@@ -7,9 +7,6 @@ DRAWER_ERROR_STACK = "Storage drawers can only hold stackable items"
 DRAWER_ERROR_MISMATCH = "Storage drawers can only store one type of item"
 DRAWER_ERROR_QUANTITY = "Storage drawers can only hold up to " ..
                             DRAWER_MAX_CAPACITY .. " items"
-
-EMPTY_SPRITE = 920
-
 drawer_sprite = nil
 tooltip_sprite = nil
 error_sprite = nil
@@ -65,6 +62,7 @@ function drawer_change(menu_id)
     -- update item display
     if output_item ~= "" then
         local spr = api_get_sprite(output_item .. "_item")
+        api_log('yeet', {spr = spr, output_item = output_item, EMPTY_SPRITE = EMPTY_SPRITE})
         if spr == EMPTY_SPRITE then spr = api_get_sprite(output_item) end
         api_sp(menu_id, "item_sprite", spr)
     else
@@ -137,7 +135,6 @@ function click_drawer(button, click_type)
         api_slot_set(slot_id, slot.item, amt)
         -- shift click procedure: if theres a target menu, go there, else player inventory
         local menus = api_get_menu_objects()
-        local player = api_get_inst(api_get_player_instance())
         local filtered = {}
         for i = 1, #menus do
             if menus[i].menu_id ~= menu_id and api_gp(menus[i].id, "open") and

@@ -1,11 +1,11 @@
 --TODO: 
 -- -Error messages
 -- -Honeycore?
--- - get colors from game files
+-- -get colors from game files
 CRAFTER_ID = "auto_crafter"
 FULL_CRAFTER_ID = "storage_drawer_auto_crafter"
 
-CRAFTER_TIMER = 3 --TODO: change
+CRAFTER_TIMER = 10
 CRAFTER_SEARCH = {"ANY"}
 CRAFTER_SLOTS = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}
 
@@ -37,7 +37,7 @@ function define_crafter()
             {65, 35, "Output"} -- recipe picker
         },
         buttons = {"Help", "Target", "Close"},
-        info = {{"1. Items to Sell", "FONT_BGREY"}}, --TODO: change
+        info = {{"1. Ingredients", "GREEN"}, {"2. Recipe Item", "YELLOW"}, {"3. Output", "RED"}},
         tools = {"mouse1", "hammer1"},
         placeable = true
     }, "sprites/auto_crafter/item.png", "sprites/auto_crafter/menu.png", {

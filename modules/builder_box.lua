@@ -239,7 +239,6 @@ function click_builder_box(button, click_type)
             api_slot_set(slot_id, slot.item, amt)
             -- shift click procedure: if theres a target menu, go there, else player inventory
             local menus = api_get_menu_objects()
-            local player = api_get_inst(api_get_player_instance())
             local filtered = {}
             for i = 1, #menus do
                 if menus[i].menu_id ~= menu_id and api_gp(menus[i].id, "open") and

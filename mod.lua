@@ -1,5 +1,5 @@
 MOD_NAME = "storage_drawer"
-
+EMPTY_SPRITE = nil
 function register()
     return {
         name = MOD_NAME,
@@ -9,6 +9,7 @@ function register()
 end
 
 function init()
+    EMPTY_SPRITE = api_get_sprite("zzzzz_zzzzz")
     drawer_check = init_drawer()
     shipping_check = init_shipping()
     flower_box_check = init_flower_box()
