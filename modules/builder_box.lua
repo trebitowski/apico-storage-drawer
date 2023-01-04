@@ -13,8 +13,8 @@ bb_active_sprite = nil
 function init_builder_box()
     bb_active_sprite = api_define_sprite(MOD_NAME .. "bb_active_slot",
                                          "sprites/active_slot.png", 1)
-    bb_title_sprite = api_define_sprite(MOD_NAME .. "_builder_box_title",
-                                        "sprites/builder_box/title.png", 2)
+                                         bb_title_sprite = api_define_sprite(MOD_NAME .. "_builder_box_title",
+                                         "sprites/builder_box/title.png", 2)
     return define_builder_box()
 end
 
@@ -27,23 +27,11 @@ function define_builder_box()
         layout = {
             {
                 7, 17, "Input", {
-                    "customX:zzz_tile", "customX:zzz_wall",
-                    "customX:zzz_carpet", "customX:zzz_window",
-                    "customX:zzz_grass"
+                    "customX:tile", "customX:wall",
+                    "customX:carpet", "customX:window",
+                    "customX:grass"
                 }
-            }, -- 'dummy' slot 1, used for changing the input validation icon
-            {
-                7, 17, "Input", {
-                    "carpet1", "carpet2", "carpet3", "carpet4", "carpet5", -- TODO: switch with customx slot next patch
-                    "grass1", "tile1", "tile2", "tile3", "tile4", "tile5",
-                    "tile6", "tile7", "tile8", "tile9", "tile10", "tile11",
-                    "tile12", "tile13", "tile14", "tile15", "tile16", "wall1",
-                    "wall2", "wall3", "wall4", "wall5", "wall6", "wall7",
-                    "wall8", "wall9", "wall10", "wall11", "wall12", "wall13",
-                    "wall14", "wall15", "wall16", "wall17", "wall18"
-                }
-            },
-            -- {7, 17, "Input", {"customX:wall", "customX:tile", "customX:window", "customX:carpet", "grass1"}},
+            }, 
 
             {155, 17, "Output"}, -- storage slots
             {35, 19, "Output"}, {58, 19, "Output"}, {81, 19, "Output"},
@@ -66,15 +54,15 @@ function define_builder_box()
         change = "builder_box_insert",
         draw = "builder_box_draw"
     })
-    api_define_validation_icon("customX:zzz_tile",
+    api_define_validation_icon("customX:tile",
                                "sprites/builder_box/icon_tile.png")
-    api_define_validation_icon("customX:zzz_wall",
+    api_define_validation_icon("customX:wall",
                                "sprites/builder_box/icon_wall.png")
-    api_define_validation_icon("customX:zzz_carpet",
+    api_define_validation_icon("customX:carpet",
                                "sprites/builder_box/icon_carpet.png")
-    api_define_validation_icon("customX:zzz_window",
+    api_define_validation_icon("customX:window",
                                "sprites/builder_box/icon_window.png")
-    api_define_validation_icon("customX:zzz_grass",
+    api_define_validation_icon("customX:grass",
                                "sprites/builder_box/icon_grass.png")
     local recipe = {
         {item = FULL_DRAWER_ID, amount = 3}, {item = "dye3", amount = 1},
@@ -92,7 +80,7 @@ end
 function builder_box_insert(menu_id)
     api_sp(menu_id, "error", "")
     local slots = api_get_slots(menu_id)
-    local input_item = slots[2].item
+    local input_item = slots[1].item
 
     if input_item ~= "" then
         local existing = api_gp(menu_id, input_item)
@@ -101,12 +89,12 @@ function builder_box_insert(menu_id)
             return
         end
         local transfer_amount = math.min(BUILDER_BOX_MAX_CAPACITY - existing,
-                                         slots[2].count)
-        if slots[2].count > transfer_amount then
+                                         slots[1].count)
+        if slots[1].count > transfer_amount then
             api_sp(menu_id, "error", BUILDER_BOX_ERROR_QUANTITY) -- error if overflowed past max capacity
         end
         api_sp(menu_id, input_item, existing + transfer_amount)
-        api_slot_decr(slots[2].id, transfer_amount)
+        api_slot_decr(slots[1].id, transfer_amount)
         builder_box_set_active(menu_id, input_item, nil, true)
         builder_box_set_slots(menu_id)
     end
@@ -135,12 +123,10 @@ function on_builder_box_define(menu_id)
     -- local fields = {"button_count", "active_item", "active_slot", "scroll"}
     local fields = {"button_count", "active_item", "active_slot", "scroll"}
     local slots = api_get_slots(menu_id)
-    -- dummy slots
-    api_slot_set_modded(slots[1].id, true)
     -- output slots
-    api_slot_set_modded(slots[3].id, true)
+    api_slot_set_modded(slots[2].id, true)
     -- selection slots
-    for i = 4, 23 do
+    for i = 3, 22 do
         api_slot_set_modded(slots[i].id, true)
         api_slot_set_inactive(slots[i].id, true)
     end
@@ -185,7 +171,7 @@ function builder_box_draw(menu_id)
     local cam = api_get_cam()
     local menu = api_get_inst(menu_id)
     if active ~= nil then
-        active = active - 4
+        active = active - 3
         local row = math.floor(active / 5)
         local col = active % 5
         local x = 32 + 23 * col + menu.x - cam.x
@@ -225,11 +211,11 @@ function click_builder_box(button, click_type)
     local menu_id = api_gp(slot_id, "menu")
     if api_get_inst(menu_id).oid ~= FULL_BUILDER_BOX_ID then return end
 
-    if slot.index >= 4 and slot.item ~= "" then
+    if slot.index >= 3 and slot.item ~= "" then
         builder_box_set_active(menu_id, slot.item, slot.index)
     end
 
-    if slot.index == 3 then
+    if slot.index == 2 then
         local slot_ct = slot.count
         local shift_key_down = api_get_key_down("SHFT")
         if shift_key_down == 1 then
@@ -239,6 +225,7 @@ function click_builder_box(button, click_type)
             api_slot_set(slot_id, slot.item, amt)
             -- shift click procedure: if theres a target menu, go there, else player inventory
             local menus = api_get_menu_objects()
+            local player = api_get_inst(api_get_player_instance())
             local filtered = {}
             for i = 1, #menus do
                 if menus[i].menu_id ~= menu_id and api_gp(menus[i].id, "open") and
@@ -248,7 +235,7 @@ function click_builder_box(button, click_type)
                     if slot_ct - amt + new_slot.count <= 0 then
                         api_sp(menu_id, slot.item, 0)
                         api_slot_clear(slot_id)
-                        if api_get_slot(menu_id, 3).item == "" then
+                        if api_get_slot(menu_id, 2).item == "" then
                             builder_box_set_slots(menu_id)
                         end
                     else
@@ -265,7 +252,7 @@ function click_builder_box(button, click_type)
             if slot_ct - amt + new_slot.count <= 0 then
                 api_sp(menu_id, slot.item, 0)
                 api_slot_clear(slot_id)
-                if api_get_slot(menu_id, 3).item == "" then
+                if api_get_slot(menu_id, 2).item == "" then
                     builder_box_set_slots(menu_id)
                 end
             else
@@ -294,7 +281,7 @@ function click_builder_box(button, click_type)
             if slot.count - amount <= 0 then
                 api_sp(menu_id, slot.item, 0)
                 api_slot_clear(slot_id)
-                if api_get_slot(menu_id, 3).item == "" then
+                if api_get_slot(menu_id, 2).item == "" then
                     builder_box_set_slots(menu_id)
                 end
             else
@@ -310,15 +297,15 @@ function builder_box_set_active(menu_id, item, index, force_update)
     api_sp(menu_id, "active_slot", index)
     if old_item == item and force_update ~= true then return end
     if item == nil then
-        api_slot_clear(api_get_slot(menu_id, 3).id)
+        api_slot_clear(api_get_slot(menu_id, 2).id)
     else
 
         local item_count = api_gp(menu_id, item)
 
         if item_count > 0 then
-            api_slot_set(api_get_slot(menu_id, 3).id, item, item_count)
+            api_slot_set(api_get_slot(menu_id, 2).id, item, item_count)
         else
-            api_slot_clear(api_get_slot(menu_id, 3).id)
+            api_slot_clear(api_get_slot(menu_id, 2).id)
         end
     end
 
@@ -389,19 +376,19 @@ function builder_box_set_slots(menu_id)
     local scroll = api_gp(menu_id, "scroll")
     local offset = 5 * scroll
     for i = 1, 20 do
-        if slots[i + 3] ~= nil and slots[i + 3].id ~= nil then
+        if slots[i + 2] ~= nil and slots[i + 2].id ~= nil then
             if items[i + offset] ~= nil then
-                api_slot_set(slots[i + 3].id, items[i + offset], 0)
-                api_slot_set_inactive(slots[i + 3].id, false)
-                api_sp(slots[i + 3].id, "changed", false)
+                api_slot_set(slots[i + 2].id, items[i + offset], 0)
+                api_slot_set_inactive(slots[i + 2].id, false)
+                api_sp(slots[i + 2].id, "changed", false)
                 if curr_active_item ~= nil and curr_active_item ==
                     items[i + offset] then
-                    new_active_index = i + 3
+                    new_active_index = i + 2
                 end
             else
-                api_slot_clear(slots[i + 3].id)
-                api_slot_set_inactive(slots[i + 3].id, true)
-                api_sp(slots[i + 3].id, "changed", false)
+                api_slot_clear(slots[i + 2].id)
+                api_slot_set_inactive(slots[i + 2].id, true)
+                api_sp(slots[i + 2].id, "changed", false)
             end
         end
     end
