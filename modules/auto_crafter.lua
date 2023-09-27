@@ -3,7 +3,7 @@
 -- -Honeycore?
 -- -get colors from game files
 CRAFTER_ID = "auto_crafter"
-FULL_CRAFTER_ID = "storage_drawer_auto_crafter"
+FULL_CRAFTER_ID = MOD_NAME.."_"..CRAFTER_ID
 
 CRAFTER_TIMER = 10
 CRAFTER_SEARCH = {"ANY"}
@@ -299,8 +299,8 @@ function crafter_use_items(menu_id)
   while total > 0 do
     if slot_index > #matched_slots then return false end
     local slot = matched_slots[slot_index]
-    if slot.count < 99 then
-      local amount = math.min(total, 99 - slot.count)
+    if slot.count < MAX_STACK then
+      local amount = math.min(total, MAX_STACK - slot.count)
       incr_amts[slot_index] = incr_amts[slot_index] + amount
       total = total - amount
     end

@@ -1,7 +1,7 @@
 BUILDER_BOX_ID = "builder_box"
-FULL_BUILDER_BOX_ID = "storage_drawer_builder_box"
+FULL_BUILDER_BOX_ID = MOD_NAME.."_"..BUILDER_BOX_ID
 
-BUILDER_BOX_MAX_CAPACITY = 9999
+BUILDER_BOX_MAX_CAPACITY = 99999
 
 BUILDER_BOX_ERROR_QUANTITY = "This box has a maximum capacity of " ..
                                  BUILDER_BOX_MAX_CAPACITY .. " per item"
@@ -157,9 +157,9 @@ function destroy_builder_box(id, x, y, oid, fields)
         if item:find("wall", 1, true) == 1 or item:find("tile", 1, true) == 1 or
             item:find("window", 1, true) == 1 or item:find("carpet", 1, true) ==
             1 or item:find("grass", 1, true) == 1 then
-            while (count > 99) do
-                api_create_item(item, 99, x, y)
-                count = count - 99
+            while (count > MAX_STACK) do
+                api_create_item(item, MAX_STACK, x, y)
+                count = count - MAX_STACK
             end
             if count > 0 then api_create_item(item, count, x, y) end
         end
@@ -219,7 +219,7 @@ function click_builder_box(button, click_type)
         local slot_ct = slot.count
         local shift_key_down = api_get_key_down("SHFT")
         if shift_key_down == 1 then
-            local maxamt = 99
+            local maxamt = MAX_STACK
             if button == "RIGHT" then maxamt = 1 end
             local amt = math.min(slot_ct, maxamt)
             api_slot_set(slot_id, slot.item, amt)
@@ -267,9 +267,9 @@ function click_builder_box(button, click_type)
                 return
             end
 
-            -- get the correct amount, r_click grabs 1 item, l_click grabs up to 99 (but may be less if mouse already had item, or drawer has less than 99)
+            -- get the correct amount, r_click grabs 1 item, l_click grabs up to MAX_STACK (but may be less if mouse already had item, or drawer has less than MAX_STACK)
             local mouse_amt = mouse.count or 0
-            local max_amt = 99 - mouse_amt
+            local max_amt = MAX_STACK - mouse_amt
             if max_amt == 0 then return end
             local amount = (slot.count < max_amt) and slot.count or max_amt
 

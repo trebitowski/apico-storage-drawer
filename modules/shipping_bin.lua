@@ -1,5 +1,5 @@
 BIN_ID = "shipping_bin"
-FULL_BIN_ID = "storage_drawer_shipping_bin"
+FULL_BIN_ID = MOD_NAME.."_"..BIN_ID
 
 BIN_TIMER = 30
 BIN_SEARCH = {"ANY"}
